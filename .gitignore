@@ -17,6 +17,9 @@
 # Output files from R CMD check
 /*.Rcheck/
 
+# Output files from previews
+*.nb.html
+
 # RStudio files
 .Rproj.user/
 
