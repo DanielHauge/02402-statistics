@@ -1,0 +1,26 @@
+---
+title: "02402 - Statistics exercise 1.1: Infant birth weight"
+output: html_notebook
+author: "Daniel F. Hauge"
+---
+
+All Exercise descriptions are available in the book at the course website: [Book](https://02402.compute.dtu.dk/enotes/book-IntroStatistics)
+
+Exercise description is available in the book: [Exercise 1.1](https://02402.compute.dtu.dk/enotes/book-IntroStatistics#DV%3aexc%3ainfant-birth-weight)
+
+
+## Init
+
+```{r}
+x <- c(2474,2547,2830,3219,3429,3448,3677,3872,4001,4116)
+y <- c(2844,2863,2963,3239,3379,3449,3582,3926,4151,4356)
+```
+
+## a) 
+
+
+```{r}
+
+```
+
+

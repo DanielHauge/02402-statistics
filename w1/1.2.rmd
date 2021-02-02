@@ -1,0 +1,25 @@
+---
+title: "02402 - Statistics exercise 1.2: Course grades"
+output: html_notebook
+author: "Daniel F. Hauge"
+---
+
+All Exercise descriptions are available in the book at the course website: [Book](https://02402.compute.dtu.dk/enotes/book-IntroStatistics)
+
+Exercise description is available in the book: [Exercise 1.2](https://02402.compute.dtu.dk/enotes/book-IntroStatistics#DV%3aexc%3acourse-grades)
+
+
+## Init
+
+```{r}
+
+```
+
+## a) 
+
+
+```{r}
+
+```
+
+
