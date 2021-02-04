@@ -1,1 +1,1 @@
-# 02402-statistics-exercises
+# 02402-statistics
