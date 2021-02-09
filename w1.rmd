@@ -1,0 +1,135 @@
+---
+title: "02402 - Statistics exercise week 1"
+output: html_notebook
+author: "Daniel F. Hauge"
+---
+
+All Exercise descriptions are available in the book at the course website: [Book](https://02402.compute.dtu.dk/enotes/book-IntroStatistics)
+
+
+# 1.1: Infant birth weight
+
+## Init
+
+```{r}
+x <- c(2474,2547,2830,3219,3429,3448,3677,3872,4001,4116)
+y <- c(2844,2863,2963,3239,3379,3449,3582,3926,4151,4356)
+```
+
+## a) 
+
+```{r}
+totalX <- 0
+
+for (i in x){
+  totalX <- totalX + i
+}
+
+meanX <- totalX / length(x)
+meanX
+
+varianceX <- 0
+for (i in x) {
+  varianceX <- (varianceX + (i - meanX)^2)
+}
+varianceX <- varianceX / (length(x)-1)
+varianceX
+
+
+standardDeviation <- sqrt(varianceX)
+standardDeviation
+```
+
+The mean is the average, or central value seen from a perspective of the value.
+
+Variance is the metric that describe how far apart the values are from the central value. Meaning, how far apart the data is spread. A high variance, means there are a lot of different values that are very different from the central value. A low variance means that the data is very centered around the central value. Variance is the total amount of spread amount there is.
+
+Standard deviation is the value that the typical point of data deviates from the mean. 
+
+## b)
+
+```{r}
+mean(y)
+var(y)
+sd(y)
+```
+Male are on average more heavy than females. And also the females are deviating more, more occurrences and farther from the central values.
+
+## c)
+```{r}
+quantile(y)
+quantile(x)
+```
+```{r}
+boxplot(x,y)
+```
+
+## d)
+There a female extreme small value and a male extreme big value.
+
+## e)
+```{r}
+sd(x)/mean(x)
+sd(y)/mean(y)
+```
+
+# 1.2 Course grades
+
+## a) 
+There are 251 grades, the median will be the grade at 125 positon.
+Can just count up to 125, and pick the group which the counting ended on. In this case, counting down, 34 at grade 12, 28 at grade 10, 43 at grade 7 and hitting 125 in grade 4. Meaning the median will be grade 4.
+
+
+## b)
+Quartiles are approx one forth. Each representing approx 62 grades. Again, can count up to that 62 grades. Countign from the lowest:
+Grade 0 and -3 make up 65 grades, which means the lower quartile is 0.
+grade 12 and 10 make up 62 grades, which is exactly at the cut off. the upper quartile is 10. Inter quartile range is then 10-0 = 10.
+
+
+# 1.3 Cholesterol
+
+## Init
+
+```{r}
+before <- c(9.1, 8.0, 7.7, 10.0, 9.6, 7.9, 9.0, 7.1, 8.3, 9.6, 8.2, 9.2, 7.3, 8.5, 9.5)
+after <- c(8.2, 6.4, 6.6, 8.5, 8.0, 5.8, 7.8, 7.2, 6.7, 9.8, 7.1, 7.7, 6.0, 6.6, 8.4)
+```
+
+## a) 
+
+
+```{r}
+median(before)
+median(after)
+
+```
+## b)
+```{r}
+sd(before)
+sd(after)
+```
+## c)
+```{r}
+cov(before, after)
+```
+## d)
+
+```{r}
+cor(before, after)
+
+```
+## e)
+
+```{r}
+difs <- before - after
+mean(difs)
+var(difs)
+sd(difs)
+```
+```{r}
+boxplot(difs)
+```
+
+## f)
+
+The mean is shown to be lower for after. The mean of each observation is 1.2, which is evident that in the total cholesterol level of all patients in the sample is lowered after the procedure. The standard deviation is not very big, meaning many of the observations are very closely packet, which means that no outlandish data is present.

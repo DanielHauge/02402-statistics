@@ -1,0 +1,177 @@
+---
+title: "02402 - Statistics exercise week 2"
+output: html_notebook
+author: "Daniel F. Hauge"
+---
+
+All Exercise descriptions are available in the book at the course website: [Book](https://02402.compute.dtu.dk/enotes/book-IntroStatistics)
+
+Inspirational material used:
+- https://www.youtube.com/watch?v=8idr1WZ1A7Q
+- https://www.youtube.com/watch?v=ZA4JkHKZM50
+
+
+
+
+# 2.1 Discrete random variable
+
+## a) 
+
+```{r}
+dbinom(4,10,0.6)
+```
+The probability of success for a single try is 60%. Trying 10 times, what is the probability that a success occurs 4 times. This is the binomial distribution, which is about 11,14767 %. ie. What is the chances to succeed 4 times out of 10 tries with 60% chance of success, where the results is independent of each other. 
+
+That makes sense, as there would be the biggest chance of betting 6 successes out of 10 tries with 60% chance of success, and very low chance of getting 0 successes with 10 tries at 60% chance at success. That means gettign 4 successes out of 10 is a little off the expected value, meaning it is not the highest chance to occur as 6 succeses out of 10 would have.
+
+## b)
+
+Given the probability of succes at 60%, with 10 tries.
+
+```{r}
+lt6 <- pbinom(5,10,0.6) + pbinom(4,10,0.6) + pbinom(3,10,0.6) + pbinom(2,10,0.6) + pbinom(1,10,0.6)
+lt5 <- pbinom(4,10,0.6) + pbinom(3,10,0.6) + pbinom(2,10,0.6) + pbinom(1,10,0.6)
+gt4 <- 1 - (pbinom(4,10,0.6) + pbinom(3,10,0.6) + pbinom(2,10,0.6) + pbinom(1,10,0.6))
+
+d<-c(lt6,lt5,gt4)
+d
+```
+The probability of 5 or fewer succeses are about 60%.
+
+the probability of 4 or fewer succeses are about 23,4%.
+
+The probability of 5 or more successes are about 76%.
+
+## c)
+
+```{r}
+dpois(4,3)
+```
+The mean is 3, meaning that 3 is the most likely observation for that given frame of observations. The poisson distribution looks at the probability of it being 4. The poisson distribution is calculating how likely a given event is based on known means. 0.168.. means that there is a 16% probability that the obersvations show 4. 
+
+To better understand it, let the distribution be over number of cars driving by a road in a minute. The mean is 3, the poisson distribution can calculate the likelyhood that it will 4 be instead.
+
+
+## d)
+Here we just sum the probabilities
+
+```{r}
+lt6 <- ppois(5,3, lower.tail = TRUE)
+lt5 <- 1 - ppois(4,3, lower.tail = FALSE) 
+gt4 <- 1 - ppois(3,3, lower.tail = TRUE)
+
+info <- c(lt6,lt5,gt4)
+info
+
+```
+There is a 91% chance of the stochastic variable being less than 6.
+
+There is a 81% chance of the stochastic variable being less than 5
+
+There is a 35% chance of the stochastic variable being bigger than 4.
+
+# 2.4 Consumer survey
+
+## a)
+
+```{r}
+## Number of successes in the population
+a <- 6
+## Size of the population
+N <- 20
+## Number of draws
+n <- 3
+## Plot the pdf, note: parameters names are different in the R function
+## Distribution of probabilities: dhyper(x=0:(n+1), m=a, n=N-a,k=n)
+1 - phyper(0, a, N-a, n)
+```
+68% chance that no discrepancies ocurs.
+
+# 2.5 Hay delivery quality
+
+## a) 
+
+```{r}
+believed <- 2/20
+
+s <- sample(c(0,1), 2000, replace=TRUE, c(18/20, 2/20))
+
+mean(s)
+var(s)
+1- dbinom(0,20,2/20)
+
+## Number of successes in the population
+a <- 2
+## Size of the population
+N <- 20
+## Number of draws
+n <- 3
+## Plot the pdf, note: parameters names are different in the R function
+## Distribution of probabilities: dhyper(x=0:(n+1), m=a, n=N-a,k=n)
+1 - phyper(0, a, N-a, n)
+
+```
+Mean is of infected bales are based on sample test approx 8%.
+
+The variance is also 8%.
+
+The probability of atleast one bale out of 3 checked in a batch of 20 with a expected likelihood of 2/20 bales is 28%.
+
+
+## b)
+```{r}
+
+dbinom(0, 10, 0.01)
+dbinom(0, 10, 0.1)
+
+```
+There is a 90% chance that no bales are infected in the 10 trials for a 1% infection rate.
+
+There is a 35% chance that no bales are infected in the 10 trials for a 10% infection rate.
+
+# 2.7 A fully automated production
+
+```{r}
+lambda <- 1.6
+dpois(0:8, lambda)
+1 - ppois(5, lambda)
+
+
+## Number of realizations
+# n <- 1000
+## Simulate
+# x <- rpois(n, lambda)
+## Plot the empirical pdf
+# plot(table(x)/n)
+## Add the pdf to the plot
+# lines(0:20, dpois(0:20,lambda), type="h", col="red")
+
+```
+The chances of there being more than 5 items in the control unit in a minute is approx 0.6% chance.
+
+```{r}
+lambda <- (1.6)*5
+
+ppois(8, lambda)
+```
+There is a 59% chance that no more than 8 items arrive to the control unit within 5 minutes.
+
+
+# 2.8 Call center staff
+
+```{r}
+averageCallsPerHour <- 180
+averageCallsPerFiveMinutes <- averageCallsPerHour/12
+lambda <- averageCallsPerFiveMinutes
+# probability of 19 or less calls per 5 minutes. ( 1 - ppois) for probability of over exceeding 
+1 - ppois(19, lambda)
+```
+There is a 12% probability that the call center will exceed its capacity in a random period of 5 minutes.
+
+
+```{r}
+lambda <- 15
+# probability of 19 or less calls per 5 minutes.
+ppois(25, lambda)
+```
+For the probability of not over exceeding, the capacity should be 25 or less calls per 5 minutes.
