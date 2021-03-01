@@ -1,0 +1,124 @@
+---
+title: "02402 - Statistics exercise week 4"
+output: html_notebook
+author: "Daniel F. Hauge"
+---
+
+All Exercise descriptions are available in the book at the course website: [Book](https://02402.compute.dtu.dk/enotes/book-IntroStatistics)
+
+https://02402.compute.dtu.dk/enotes/book-IntroStatistics#SNA%3aexc%3aconcrete-items
+http://www2.compute.dtu.dk/courses/introstat/slides02402/week4.pdf
+http://www2.compute.dtu.dk/courses/introstat/slides02402/week4.R
+https://02402.compute.dtu.dk/enotes/chapter3-StatisticsNormalAssumption
+https://02402.compute.dtu.dk/filemanager/02402/sharelatex-public/files/solutions-chapter3.pdf
+
+
+# 3.1 Concret items
+```{r}
+Lreq <- 3000
+s <- c(3003, 3005, 2997, 3006,2999,2998, 3007,3005,3001)
+```
+
+
+## a)
+
+```{r}
+mean(s)
+sd(s)
+```
+
+```{r}
+l <- length(s)
+se <- sd(s)/sqrt(l)
+se
+```
+
+
+## B)
+```{r}
+variance <- 45
+library(lattice)
+mean <- 15000
+sd <- sqrt(variance)
+e4a <- seq(14970, 15030, length = 30000)            # Data to set up out normal
+from <- 0
+to <- 15010
+e4b <- dnorm(e4a, mean, sd)
+
+         xyplot(e4b ~ e4a,                   # Lattice xyplot
+               type = "l",
+               main = sprintf("Plot with: pnorm(15010, 15000, sqrt(45)). Chance for error bigger than 10 mm = %s", 2*(1-pnorm(to, mean, sd))),
+               panel = function(x,y, ...){
+                   panel.xyplot(x,y, ...)
+                   panel.abline( v = c(2), lty = 2)  #set z and lines
+
+                   xx <- c(1, x[x>=-from & x<=to], to)         #Color area
+                   yy <- c(0,   y[x>=-from & x<=to], 0) 
+                   panel.polygon(xx,yy, ..., col='red')
+               })
+```
+
+## c)
+
+```{r}
+
+t.test(s, conf.level=0.95)
+
+
+```
+```{r}
+t.test(s, conf.level=0.99)
+```
+The confidence range for 99% confidence interval is a bit larger as to accomodate for the extra 4% chance of deviating more.
+
+```{r}
+
+n <- length(s)
+v <- n - 1
+s2 <- var(s)
+alpha <- 1 - 0.95
+confVar <- c((v*s2)/qchisq((1-(alpha/2)), df = v),(v*s2)/qchisq((alpha)/2, df = v))
+confVar
+
+confSd <- c(sqrt(confVar[1]), sqrt(confVar[2]))
+confSd
+```
+
+## f)
+```{r}
+n <- length(s)
+v <- n - 1
+s2 <- var(s)
+alpha <- 1 - 0.99
+confVar <- c((v*s2)/qchisq((1-(alpha/2)), df = v),(v*s2)/qchisq((alpha)/2, df = v))
+confVar
+
+confSd <- c(sqrt(confVar[1]), sqrt(confVar[2]))
+confSd
+```
+# 3.2
+
+## a)
+```{r}
+profiles <- c(
+  180.02,  180.00,  180.01,  179.97,  179.92,  180.05,  179.94,  180.10,  
+  180.24,  180.12,   180.13, 180.22,  179.96,  180.10,  179.96,  180.06)
+profiles_mean <- mean(profiles)
+profiles_sd <- sd(profiles)
+t.test(profiles, conf.level=0.90)
+```
+180.008 to 180.092
+
+
+## b)
+```{r}
+n <- length(profiles)
+v <- n - 1
+s2 <- var(profiles)
+alpha <- 1 - 0.99
+confVar <- c((v*s2)/qchisq((1-(alpha/2)), df = v),(v*s2)/qchisq((alpha)/2, df = v))
+
+confSd <- c(sqrt(confVar[1]), sqrt(confVar[2]))
+confVar
+```
+

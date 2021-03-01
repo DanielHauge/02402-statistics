@@ -1,0 +1,309 @@
+---
+title: "02402 - Statistics exercise week 3"
+output: html_notebook
+author: "Daniel F. Hauge"
+---
+
+All Exercise descriptions are available in the book at the course website: [Book](https://02402.compute.dtu.dk/enotes/book-IntroStatistics)
+
+
+
+
+
+# 2.9 Continuous random variable
+
+## a)
+```{r}
+library(lattice)
+mean <- 0
+sd <- 1
+from <- 10
+to <- 2
+e4a <- seq(-4, 4, length = 10000)            # Data to set up out normal
+e4b <- dnorm(e4a, mean, sd)
+
+         xyplot(e4b ~ e4a,                   # Lattice xyplot
+               type = "l",
+               main = sprintf("Plot with: pnorm(2) = %s", pnorm(2)),
+               panel = function(x,y, ...){
+                   panel.xyplot(x,y, ...)
+                   panel.abline( v = c(2), lty = 2)  #set z and lines
+
+                   xx <- c(1, x[x>=-from & x<=to], to)         #Color area
+                   yy <- c(0,   y[x>=-from & x<=to], 0) 
+                   panel.polygon(xx,yy, ..., col='red')
+               })
+```
+pnorm(2) descripes the probabilities of the next occurence being below 2, following a normal distribution.
+
+```{r}
+library(lattice)
+m <- 1
+sd <- 1
+from <- 10
+to <- 2
+e4a <- seq(-4, 4, length = 10000)            # Data to set up out normal
+e4b <- dnorm(e4a, m, sd)
+
+         xyplot(e4b ~ e4a,                   # Lattice xyplot
+               type = "l",
+               main = sprintf("Plot with: pnorm(2,1,1) = %s", pnorm(2,1,1)),
+               panel = function(x,y, ...){
+                   panel.xyplot(x,y, ...)
+                   panel.abline( v = c(2), lty = 2)  #set z and lines
+
+                   xx <- c(1, x[x>=-from & x<=to], to)         #Color area
+                   yy <- c(0,   y[x>=-from & x<=to], 0) 
+                   panel.polygon(xx,yy, ..., col='red')
+               })
+```
+```{r}
+library(lattice)
+m <- 1
+sd <- 2
+from <- 10
+to <- 2
+e4a <- seq(-4, 4, length = 10000)            # Data to set up out normal
+e4b <- dnorm(e4a, m, sd)
+
+         xyplot(e4b ~ e4a,                   # Lattice xyplot
+               type = "l",
+               main = sprintf("Plot with: pnorm(2,1,2) = %s", pnorm(2,1,2)),
+               panel = function(x,y, ...){
+                   panel.xyplot(x,y, ...)
+                   panel.abline( v = c(2), lty = 2)  #set z and lines
+
+                   xx <- c(1, x[x>=-from & x<=to], to)         #Color area
+                   yy <- c(0,   y[x>=-from & x<=to], 0) 
+                   panel.polygon(xx,yy, ..., col='red')
+               })
+```
+
+## b)
+
+```{r}
+qnorm(pnorm(2))
+```
+It works like a reverse to pnorm. Meaning. Given a probability, where is that on the normal distribution?.
+Meaning, if pnorm of 2 goes into qnorm, it just gives 2. As it kinda cancels each others out.
+
+
+## c)
+```{r}
+library(lattice)
+m <- 0
+sd <- 1
+from <- 10
+to <- qnorm(0.975)
+e4a <- seq(-4, 4, length = 10000)            # Data to set up out normal
+e4b <- dnorm(e4a, m, sd)
+
+         xyplot(e4b ~ e4a,                   # Lattice xyplot
+               type = "l",
+               main = sprintf("Plot with: qnorm(0.975) = %s", qnorm(0.975)),
+               panel = function(x,y, ...){
+                   panel.xyplot(x,y, ...)
+                   panel.abline( v = c(to), lty = 2)  #set z and lines
+
+                   xx <- c(1, x[x>=-from & x<=to], to)         #Color area
+                   yy <- c(0,   y[x>=-from & x<=to], 0) 
+                   panel.polygon(xx,yy, ..., col='red')
+               })
+```
+At what quartile, or place does it include for the given probability 97,5%, on a standard normal distribution. 
+It is approximately below 2.
+
+```{r}
+library(lattice)
+m <- 1
+sd <- 1
+from <- 10
+to <- qnorm(0.975,m,sd)
+e4a <- seq(-4, 4, length = 10000)            # Data to set up out normal
+e4b <- dnorm(e4a, m, sd)
+
+         xyplot(e4b ~ e4a,                   # Lattice xyplot
+               type = "l",
+               main = sprintf("Plot with: qnorm(0.975, 1, 1) = %s", qnorm(0.975,m,sd)),
+               panel = function(x,y, ...){
+                   panel.xyplot(x,y, ...)
+                   panel.abline( v = c(to), lty = 2)  #set z and lines
+
+                   xx <- c(1, x[x>=-from & x<=to], to)         #Color area
+                   yy <- c(0,   y[x>=-from & x<=to], 0) 
+                   panel.polygon(xx,yy, ..., col='red')
+               })
+```
+At what quartile, or place does it include for the given probability 97,5%, on a normal distribution, with mean = 1, basicly just shifted 1. 
+It is approximately below 3. 
+```{r}
+library(lattice)
+m <- 1
+sd <- 2
+from <- 10
+to <- qnorm(0.975,m,sd)
+e4a <- seq(-8, 8, length = 10000)            # Data to set up out normal
+e4b <- dnorm(e4a, m, sd)
+
+         xyplot(e4b ~ e4a,                   # Lattice xyplot
+               type = "l",
+               main = sprintf("Plot with: qnorm(0.975, 1, 2) = %s", qnorm(0.975,m,sd)),
+               panel = function(x,y, ...){
+                   panel.xyplot(x,y, ...)
+                   panel.abline( v = c(to), lty = 2)  #set z and lines
+
+                   xx <- c(1, x[x>=-from & x<=to], to)         #Color area
+                   yy <- c(0,   y[x>=-from & x<=to], 0) 
+                   panel.polygon(xx,yy, ..., col='red')
+               })
+```
+At what quartile, or place does it include for the given probability 97,5%, on a normal distribution, with mean = 1 and standard deviation = 2. 
+It is approximately below 5. 
+
+
+# 2.10 The normal pdf
+```{r}
+library(lattice)
+m <- 1
+sd <- 2
+e4a <- seq(-8, 8, length = 10000)            # Data to set up out normal
+e4b <- dnorm(e4a, m, sd)
+
+         xyplot(e4b ~ e4a,                   # Lattice xyplot
+               type = "l",
+               main = sprintf("normal dist"),
+               panel = function(x,y, ...){
+                   panel.xyplot(x,y, ...)
+                   panel.abline( v = c(to), lty = 2)  #set z and lines
+
+               })
+```
+
+## a)
+The variance is not 2.
+
+## b)
+```{r}
+library(lattice)
+m <- 24
+sd <- sqrt(16)
+from <- 0
+to <- 20
+e4a <- seq(0, 50, length = 10000)            # Data to set up out normal
+e4b <- dnorm(e4a, m, sd)
+
+         xyplot(e4b ~ e4a,                   # Lattice xyplot
+               type = "l",
+               main = sprintf("P(x=<20) = pnorm(%s, %s, %s) = %s", to, m, sd, pnorm(to, m,sd)),
+               panel = function(x,y, ...){
+                   panel.xyplot(x,y, ...)
+                 
+                   xx <- c(1, x[x>=-from & x<=to], to)         #Color area
+                   yy <- c(0,   y[x>=-from & x<=to], 0) 
+                   panel.polygon(xx,yy, ..., col='red')
+
+               })
+```
+
+```{r}
+library(lattice)
+m <- 24
+sd <- sqrt(16)
+from <- 29.5
+to <- 100
+e4a <- seq(0, 50, length = 10000)            # Data to set up out normal
+e4b <- dnorm(e4a, m, sd)
+
+         xyplot(e4b ~ e4a,                   # Lattice xyplot
+               type = "l",
+               main = sprintf("P(x > 29,5) = 1- pnorm(%s, %s, %s) = %s", from, m, sd, 1- pnorm(from, m,sd)),
+               panel = function(x,y, ...){
+                   panel.xyplot(x,y, ...)
+                 
+                   xx <- c(from, x[x>=from & x<=to], to)         #Color area
+                   yy <- c(0,   y[x>=from & x<=to], 0) 
+                   panel.polygon(xx,yy, ..., col='red')
+
+               })
+```
+
+The desity of being exactly 23.8 is 0. Desity needs to be of a range
+
+
+# 2.11 Computer chip control
+
+## a)
+```{r}
+library(lattice)
+m <- 54
+sd <- 3
+from <- (65-10)
+to <- 1000
+e4a <- seq(0, 100, length = 10000)            # Data to set up out normal
+e4b <- dnorm(e4a, m, sd)
+
+         xyplot(e4b ~ e4a,                   # Lattice xyplot
+               type = "l",
+               main = sprintf("P(x > %s) = 1- pnorm(%s, %s, %s) = %s", from, from, m, sd, 1- pnorm(from, m,sd)),
+               panel = function(x,y, ...){
+                   panel.xyplot(x,y, ...)
+                 
+                   xx <- c(from, x[x>=from & x<=to], to)         #Color area
+                   yy <- c(0,   y[x>=from & x<=to], 0) 
+                   panel.polygon(xx,yy, ..., col='red')
+
+               })
+
+```
+
+
+To save less than 10 miliseconds on the new machine.It needs to take longer than 55 seconds. As this would be more than 10 seconds from the expected.
+
+##b) 
+Following a normal distribution, the mean is 54 and 3 miliseconds standard deviation. For 100 chips.
+
+# 2.12 Concrete items
+```{r}
+library(lattice)
+m <- 3000
+sd <- 3
+from <- (2993)
+to <- 3007
+e4a <- seq(2990, 3010, length = 10000)            # Data to set up out normal
+e4b <- dnorm(e4a, m, sd)
+
+         xyplot(e4b ~ e4a,                   # Lattice xyplot
+               type = "l",
+               main = sprintf("1 - P(%s <= X <= %s) = (pnorm(%s, %s, %s)*2) = %s", from, to, from, m, sd, (pnorm(from, m,sd)*2)),
+               panel = function(x,y, ...){
+                   panel.xyplot(x,y, ...)
+                 
+                   xx <- c(from, x[x>=from & x<=to], to)         #Color area
+                   yy <- c(0,   y[x>=from & x<=to], 0) 
+                   panel.polygon(xx,yy, ..., col='red')
+
+               })
+```
+Not the red area. 1,9% error rate.
+
+## b)
+```{r}
+qnorm(0.99,2900, 100)
+?
+```
+
+
+
+# 2.13 Online statistic video views
+
+```{r}
+VisitersYear <- 110000
+VisistersDay <- VisitersYear/365
+VisistersHour <- VisistersDay/24
+VisisterHalfHour <- VisistersHour/2
+VisistersQuarter <- VisisterHalfHour/2
+ppois(0, VisisterHalfHour)
+ppois(0, VisistersQuarter)
+```
+There is a 0,18% chance that there are no views in a ghiven half hour.
+There is a 4,3% chance you'd have to wait more than 15 min.
