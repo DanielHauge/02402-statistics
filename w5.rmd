@@ -1,0 +1,61 @@
+---
+title: "02402 - Statistics exercise week 5"
+output: html_notebook
+author: "Daniel F. Hauge"
+---
+
+All Exercise descriptions are available in the book at the course website: [Book](https://02402.compute.dtu.dk/enotes/book-IntroStatistics)
+
+https://02402.compute.dtu.dk/enotes/book-IntroStatistics#SNA%3aexc%3aconcrete-items-hyp
+https://02402.compute.dtu.dk/enotes/chapter3-StatisticsNormalAssumption
+http://www2.compute.dtu.dk/courses/introstat/slides02402/week5.pdf
+http://www2.compute.dtu.dk/courses/introstat/slides02402/week5.R
+https://02402.compute.dtu.dk/filemanager/02402/sharelatex-public/files/solutions-chapter3.pdf
+
+# 3.3 Concret items
+
+## a)
+
+```{r}
+sample <- c(3003, 3005, 2997, 3006, 2999, 2998, 3007, 3005, 3001)
+mu <- 3000
+
+t.test(sample, mu=3000)
+```
+There is very weak evidence against the null hypothesis, that the true mean is 3000. Weak evidence is in the range of a p-value between 0.05 and 0.1. P-value having 0.09 is very weak evidence.
+
+## b & c)
+
+```{r}
+t.test(sample, mu=3000, conf.level = 0.99)
+t.test(sample, mu=3000, conf.level = 0.95)
+```
+
+How big of a risk are we willing to take to make errors. Either by false evidence against a true null hypothesis, or maybe false evidence that support the null hypothesis. A larger alpha value means we are willing to take a bigger risk, where as a smaller alpha value restricts the confidence intervals to not accept a too big deviation.
+
+## d & e)
+```{r}
+qqnorm(sample)
+qqline(sample)
+```
+
+It is very likely that the data comes from a normal distribution, as the regression follows the data pretty well.
+It is theoritical quantiles and actual sample quantiles.
+
+# 3.4 Aluminium profile
+
+## a & d)
+```{r}
+profile <- c(
+  180.02,  180.00,  180.01,  179.97,  179.92,  180.05,  179.94,  180.10,  
+  180.24,  180.12,   180.13, 180.22,  179.96,  180.10,  179.96,  180.06)
+t.test(profile, mu=180)
+```
+There is weak evidence against the true mean being 180, but not very weak.
+
+## b & c)
+```{r}
+t.test(profile, mu=180, conf.level=0.99)
+```
+The critical values are 179,9793 and 180,1207
+The same as above.
