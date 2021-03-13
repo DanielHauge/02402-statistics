@@ -6,14 +6,13 @@
 ## "Session -> Set Working Directory -> To Source File Location" 
 ## Bemærk: i R bruges kun "/" til separering i stier 
 ## (altså ingen backslash).
-setwd("Erstat her med stien til den mappe, hvor projektfilerne er gemt.")
-
+setwd("/e/repo/02402-statistics-exercises/Project1")
 
 ###########################################################################
 ## Indlæs data
 
 ## Indlæs data fra bmi1_data.csv
-D <- read.table("bmi1_data.csv", header=TRUE, sep=";", as.is=TRUE)
+D <- read.table("E:\\repo\\02402-statistics-exercises\\Project1/bmi1_data.csv", header=TRUE, sep=";", as.is=TRUE)
 
 
 ###########################################################################

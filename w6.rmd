@@ -1,0 +1,123 @@
+---
+title: "02402 - Statistics exercise week 5"
+output: html_notebook
+author: "Daniel F. Hauge"
+---
+
+All Exercise descriptions are available in the book at the course website: [Book](https://02402.compute.dtu.dk/enotes/book-IntroStatistics)
+
+https://02402.compute.dtu.dk/enotes/book-IntroStatistics#SNA%3aexc%3atransport-times
+https://02402.compute.dtu.dk/enotes/chapter3-StatisticsNormalAssumption
+http://www2.compute.dtu.dk/courses/introstat/slides02402/week6.pdf
+http://www2.compute.dtu.dk/courses/introstat/slides02402/week6.R
+https://02402.compute.dtu.dk/filemanager/02402/sharelatex-public/files/solutions-chapter3.pdf
+
+
+# 3.5 Transport times
+
+## a)
+```{r}
+ya <- 1.93
+sa <- 0.45
+yb <- 1.49
+sb <- 0.58
+n <- 9
+deltaY <- ya-yb
+
+tobs <- (ya-yb)/sqrt((sa^2/n)+(sb^2/n))
+vtop <- ((sa^2/n)+(sb^2/n))^2
+vbot <- (((sa^2/n)^2)/(n-1))+(((sb^2/n)^2)/(n-1))
+v <- 15
+
+
+2*(1-pt(tobs, df= v))
+
+```
+There is no to very weak evidence of there being a true difference.
+
+## b)
+```{r}
+c(deltaY-qt(0.975, v)*sqrt((sa^2/n)+(sb^2)/n),deltaY+qt(0.975, v)*sqrt((sa^2/n)+(sb^2)/n))
+```
+
+## c)
+```{r}
+power.t.test(n=9, delta=0.4, sd=0.5)
+```
+Only a power of 35. That is not strong.
+
+## d)
+```{r}
+power.t.test(n=9, sd=0.5, power=0.80)
+```
+An effect size of approximately 0.7 can be detected.
+
+## e)
+
+```{r}
+power.t.test(sd=0.5, delta=0.4, power=0.9)
+```
+We would need a sample size of 34 or more.
+
+
+# 3.6
+Yes. P-value is so small, that means there is strong evidence against null hypothesis, meaning the difference is clearly present.
+
+# 3.7
+## a)
+```{r}
+end <- c(173,175,174,183,181,180,170,182,188,178,181,183,185)
+min <- c(120,115,122,123,125,140,108,133,134,121,130,126,128)
+
+t.test(end,min, paired=TRUE, conf.level=0.99)
+
+```
+The pulse drop is in the range of 49,5 to 59,3, that we can 99% sure of.
+
+## b)
+```{r}
+t.test(end)
+```
+
+
+# 3.8
+
+## a)
+```{r}
+max <- c(2.62,2.71,2.18,2.25,2.72,2.34,2.63,1.86,2.84,2.93)
+min <- c(2.14,2.39,1.86,1.92,2.33,2.00,2.25,1.50,2.27,2.37)
+dif <- max-min
+
+t.test(dif)
+
+```
+We can be 95% sure that the mean difference is within 0,33 and 0,47 mm. That is not so good, if we are not allowed to exceed 0,35mm.
+
+## b)
+```{r}
+t.test(dif, mu=0.35)
+```
+P value is pretty high, that means there is no or very little and weak evidence against the possibilities of the true mean being 0.35 mm. Ie. the data given could just be from a bad day.
+
+
+
+
+# 3.10
+
+## a)
+```{r}
+Lreq <- 3000
+s <- c(3003, 3005, 2997, 3006,2999,2998, 3007,3005,3001)
+
+(qnorm(0.95)*3)^2
+
+```
+
+## b)
+```{r}
+(qnorm(0.995)*3)^2
+```
+## c)
+
+que?
+

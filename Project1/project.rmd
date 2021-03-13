@@ -1,0 +1,386 @@
+---
+title: "02402 - Statistics Projekt 1: Bmi undersøgelse"
+output: html_notebook
+author: "Daniel F. Hauge - s2011687"
+---
+
+```{r}
+D <- read.table("E:\\repo\\02402-statistics-exercises\\Project1/bmi1_data.csv", header=TRUE, sep=";", as.is=TRUE)
+D$bmi <- D$weight/(D$height/100)^2
+D$logbmi <- log(D$bmi)
+Dfemale <- subset(D, gender == 0)
+Dmale <- subset(D, gender == 1)
+n <- nrow(D)
+```
+# Indledning
+
+Symbol hax: https://rpruim.github.io/s341/S19/from-class/MathinRmd.html
+
+
+# Beskrivende analyse
+
+## a) Data
+Datamaterialet er 145 observationer med relevante egenskaber på mennesker for projektets problemstilling. 
+Variable på hver observation er som følger:
+
+| Variable Navn | Måle type | Måle enhed | Forklaring |
+| --- | --- | --- | --- |
+| Køn | Kategoriserende | 0 (Mand) / 1 (Kvinde) | Personens køn angivet som som et tal ved 0 eller 1.
+| Højde | Kvantitativt | cm | Personens højde i centimeter.
+| Vægt | Kvantitativt | kg | Personens vægt målt i kilogram
+| Urbanitet | Kategoriserende | tal i intervallet [1 - 5] | Befolkningstætheden i byen personen bor. 1: Udenfor bymæssig bebyggelse, 2: Under 10.000 indbyggere, 3: [10.00-49.999] Indbyggere, 4: [50.000-99.999] Indbyggere, 5: Over 100.000 indbyggere
+| Fastfood | Kvantitativt | dage pr. år | Antal dage per år personen har spist fastfood. 
+
+Nedenfor ses første og sidste observation som et præsenterende eksempel:
+```{r}
+first <- head(D, 1)
+last <- tail(D,1)
+rbind(first,last)
+```
+
+\pagebreak
+
+## b) Data fordeling
+
+Vi kan ved hjælp fra et histogram over tæthed for BMI nemmere beskrive hvordan stikprøvens BMI oberservationer fordeler sig. Nedenfor ses et histogram over Tætheden for BMI, hver søjle i histogrammet har et interval på 2. Y aksen eller højderne på søjlerne beskriver hvor stor en andel der ligger inden i det tilsvarende søjle interval. X aksen er BMI.
+```{r}
+hist(D$bmi, xlab="BMI", ylab="Tæthed",prob=TRUE, main = sprintf("Histogram for BMI. \n x-bar = %#.2f | x-tilde = %#.2f | ∆: %#.2f " , mean(D$bmi), median(D$bmi), mean(D$bmi)- median(D$bmi)) )
+```
+Histogrammet følger noget der måske godt kunne ligne en normal fordeling. Men histogrammet er ikke helt symmetrisk omkring den centrale data tendens, vi har altså en højreskæv fordeling af BMI. Det ses at stikprøven indeholder en længere hale på den overvægtige ende, derfor kan det også ses at BMI middelværdien i stikprøven er over medianen værdien. 
+
+\pagebreak
+
+## c) Segmentering af data
+Da der er naturlige forskellige mellem kvinder og mænd, bør vi også kigge på dataen opdelt for kvinder og mænd. Nedenfor ses histogrammer i samme stil som tidligere, dog opdelt i mænd og kvinder.
+
+```{r}
+par(mfrow=c(1,2))
+hist(Dfemale$bmi, xlab="BMI", ylab="Tæthed",prob=TRUE, main = sprintf("Kvinder \n %#.2f | %#.2f | ∆: %#.2f" , mean(Dfemale$bmi), median(Dfemale$bmi), mean(Dfemale$bmi)-median(Dfemale$bmi)))
+hist(Dmale$bmi,xlab="BMI", ylab="Tæthed",prob=TRUE, main = sprintf("Mænd \n %#.2f | %#.2f | ∆: %#.2f" , mean(Dmale$bmi), median(Dmale$bmi), mean(Dmale$bmi)- median(Dmale$bmi)) )
+```
+Det samme mønster opstår, med en højre skæv fordeling. Dog lader det til at stikprøven for mænd er fordelt en lille smule mere skæv set ved en højere difference mellem middelværdien og medianen. Generelt ligger mænd desuden også lidt højere på BMI end kvinder.
+
+\pagebreak
+
+## d) Box-plot og Sammenligninger
+Histogrammer kan illustrere tætheden for BMI'en for en given stikprøve. Dog kan det være vanskeligt at sammenligne 2 stikprøvers fordelinger med histogrammer. Derfor kan samme præsentation laves med et boxplot istedet for histogrammer. Nedenfor ses et box-plot af fordelingen af kvinder og mænd.
+```{r}
+boxplot(Dfemale$bmi, Dmale$bmi, names=c("Kvinder", "Mænd"), xlab="Køn", ylab="BMI")
+```
+Her er det meget mere tydeligt, at stikprøven for mænd har en tendens til at være mere overvægtige end kvinder. Box-plottet viser også meget tydeligt enkeltstående ekstreme tilfælde, her ses 2 ekstreme tilfælde i stikprøven for kvinder, og en enkelt i stikprøven for mænd. 
+Det ligner også at den interkvartile rækkevidde (IQR) for stikprøven over mænd er mindre end for kvinder, hvilket kunne tyde på at BMI afviger mindre, altså spredningen er mindre for mænd end kvinder.
+
+Med dette box-plot er det altså nemmere at sammenligne og få en fornemmelse af fordelingerne mellem stikprøverne for mænd og kvinder.
+
+
+\pagebreak
+
+## e) Nøgletal
+Plots giver en god fornemmelse af hvordan data'en er fordelt og ser ud. Dog giver plots ikke nogle eksakte tal som kan bruges i beskrivelserne. Nedenfor er relevante nøgletal fundet og indskrevet i tabellen.
+
+```{r}
+w <- D$bmi
+alleSummary <- c(sum(!is.na(w)), mean(w, na.rm=TRUE), var(w, na.rm=TRUE), sd(w, na.rm=TRUE), quantile(w, .25), quantile(w, .50), quantile(w, .75))
+w <- Dfemale$bmi
+kvinderSummary <- c(sum(!is.na(w)), mean(w, na.rm=TRUE), var(w, na.rm=TRUE), sd(w, na.rm=TRUE), quantile(w, .25), quantile(w, .50), quantile(w, .75))
+w <- Dmale$bmi
+mændSummary <- c(sum(!is.na(w)), mean(w, na.rm=TRUE), var(w, na.rm=TRUE), sd(w, na.rm=TRUE), quantile(w, .25), quantile(w, .50), quantile(w, .75))
+```
+
+
+| Variabel | Antal Observationer | Middelværdi | Varians | Standard afvigelse | Nedre Kvartil | Median | Øvre kvartil |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Alle | 145  | 25,24 | 14,68 | 3,83 | 22,5 | 24,69 | 27,63 |
+| Kvinder | 72 | 24,21 | 16,41 | 4,05 | 21,25 | 23,68 | 26,29 |
+| Mænd | 73 | 26,26 | 11,06 | 3,32 | 24,15 | 25,72 | 28,63 |
+
+Med en tabel udfyldt med nøgletal, kan vi mere præcist beskrive fordelingerne. Med box-plottet kunne man med gode øjne spotte sig til at stikprøven for mænd har en mindre spredning, men disse nøgletal afslører det direkte. Med histogrammerne og box-plottet er det således at man ikke har præcise værdier som eksempelvis nedre og øvre kvatiler. Plots afslører ofte heller ikke en præcis tæthed eller data centralitet, men giver blot en illustrerende ide om fordelingen. Disse nøgletal giver et indblik i præcis hvor data'ens centrale tendens er, og hvilke størelser stikprøvernes fordelingen karakteriseres ved. 
+
+\pagebreak
+
+# Statistisk analyse
+
+## f) Logaritmisk perspektiv
+Den statiske model antages at være log normalt fordelt. Hermed:
+
+
+$X_i \sim LN(\alpha, \beta^{2} ) (\beta>0), i=1,...n$
+
+```{r}
+alpha <- mean(D$logbmi)
+beta <- sd(D$logbmi)
+```
+Estimationer baseret på stikprøven:
+- $\alpha=3.217641$
+- $\beta = 0.1488778$
+
+Det kan med et QQ-plot ses at følge en log normal fordelings model. Det ses på plotsne nedenfor at de observerede BMI'er følger en teoretisk normal fordeling langt bedre ved logaritmisk transformation. Den logaritmisk transformeret data følger altså en normal fordeling bedre, da punkterne (data'en) følger linjen relativt godt. Det ses at rå BMI buer lidt op ved høje og lave værdier.
+
+
+```{r}
+par(mfrow=c(1,2))
+qqnorm(D$logbmi, ylab = "Værdi", xlab = "Teoretiske Kvantiler", main = "Log BMI")
+qqline(D$logbmi)
+
+qqnorm(D$bmi, ylab = "Værdi", xlab = "Teoretiske Kvantiler", main = "BMI")
+qqline(D$bmi)
+```
+
+## g) Konfidensinterval
+
+Konfidensinterval kan findes med følgene formel:
+
+- $\tilde{x} ± t_{0.975} \times \frac{s}{\sqrt(n)}$
+
+Hvor $\tilde{x}$ er middelværdien, $s$ er standard afvigelsen og $t_{0.975}$ er t fordelingens 97.5 kvantile i $n-1$ frihedsgrader, hvor n er antal observationer af data'en og derfor 144 frihedsgrader.
+
+```{r}
+konf <- mean(D$logbmi)+(qt(0.975, (n-1))*(sd(D$logbmi)/sqrt(length(D)))*c(-1,1))
+```
+
+$KI \approx [3.11 ; 3.33]$
+
+
+
+## h) Hypotese
+
+Givet hypotesen at middelværdien for den logaritmiske transformerede BMI er log(25) kan testes ved at finde P-værdien.
+
+P-værdien for hypotesen findes ved formel: 
+
+- $p-value = 2 \times P(T>|t_{obs}|)$
+
+Hvor T følger t fordelingen med (n-1) frihedsgrader.
+
+Teststørelsen $t_{obs}$ findes ved formel:
+
+- $t_{obs}=\frac{\tilde{x}-\mu_0}{s/\sqrt{n}}$
+
+Hvor $\tilde{x}$ er stikprøve middelværdien, $s$ er stikprøve standard afvigelsen, $n$ er antal observationer og $\mu_0$ er null hypotesen.
+
+Indsætter værdier og udregner med følgende i R:
+
+- $\mu_0=log(25)$
+- $\tilde{x}=3.217641$
+- $s = 0.1488778$
+- $n=145$
+
+```{r}
+tobs <- (alpha-log(25))/(beta/sqrt(n))
+p <- 2 * (1-pt(abs(tobs), df=n-1))
+```
+
+- $t_{obs} \approx -0.0999$
+- $p \approx 0.92$
+
+Med den givne hypotese fås en meget høj P værdi, som svare til at at der stortset ingen evidens er imod hypotesen. Givet denne data, er det ifølge denne hypotese test slet ikke umuligt at populations middelværdien for LogBMI er Log(25). Her afvises hypotesen ikke, da det formodes at signifikansniveauet er typisk ved 0.05. Med andre ord er der altså ikke statistisk signifikans til at afvise hypotesen, da p værdien ikke er mindre signifikans nivueat. Vi kan med denne hypotese test ikke konkludere at mere end halvdelen af populationen er overvægtig, men vi kan dog konkludere at det godt kunne lade sig gøre i følge den givne data. 
+
+En hypotese test kan også laves med R med funktionen ```t.test()```, den giver samme resultater.
+
+```{r}
+ttestresults <- t.test(D$logbmi, mu=log(25))
+# ttestresults
+```
+
+## i) Opdelte modeler
+Samme procedure som i del f)
+
+### Kvinder:
+- $K_i \sim LN(\alpha_k, \beta_k^{2} ) (\beta_k>0), i=1,...n_K$
+
+```{r}
+alphak <- mean(Dfemale$logbmi)
+betak <- sd(Dfemale$logbmi)
+```
+Estimationer baseret på stikprøven:
+- $\alpha_k\approx 3.17409681$
+- $\beta_k \approx 0.15988773$
+
+QQ-plots nedenfor afslørere at log transformerede bmi'er passer bedre i en normal fordelings model end rå BMI. Herved en log normal fordeling.
+
+```{r}
+par(mfrow=c(1,2))
+qqnorm(Dfemale$logbmi, ylab = "Værdi", xlab = "Teoretiske Kvantiler", main = "Kvinder: Log BMI")
+qqline(Dfemale$logbmi)
+
+qqnorm(Dfemale$bmi, ylab = "Værdi", xlab = "Teoretiske Kvantiler", main = "Kvinder: BMI")
+qqline(Dfemale$bmi)
+```
+
+### Mænd:
+- $M_i \sim LN(\alpha_k, \beta_k^{2} ) (\beta_k>0), i=1,...n_M$
+
+```{r}
+alpham <- mean(Dmale$logbmi)
+betam <- sd(Dmale$logbmi)
+```
+Estimationer baseret på stikprøven:
+- $\alpha_k\approx 3.26058769$
+- $\beta_k \approx 0.12391144$
+
+QQ-plots nedenfor afslørere at log transformerede bmi'er passer bedre i en normal fordelings model end rå BMI. Herved en log normal fordeling.
+
+```{r}
+par(mfrow=c(1,2))
+qqnorm(Dmale$logbmi, ylab = "Værdi", xlab = "Teoretiske Kvantiler", main = "Mænd: Log BMI")
+qqline(Dmale$logbmi)
+
+qqnorm(Dmale$bmi, ylab = "Værdi", xlab = "Teoretiske Kvantiler", main = "Mænd: BMI")
+qqline(Dmale$bmi)
+```
+
+## j) Median konfidensinterval
+Først kan konfidensintervalerne for middelværdien i logbmi udregnes.
+
+```{r}
+#t.test(Dmale$logbmi)
+#t.test(Dfemale$logbmi)
+```
+
+| logbmi (middel) | Nedre | Øvre |
+| --- | --- | --- |
+| Kvinder | 3.136525 | 3.211669 |
+| Mænd | 3.231677 | 3.289498 |
+
+Hernæst kan vi transformere tilbage til bmi med ekspoential funktionen. Så fås følgende konfidens intervaller for mænd og kvinders medianer.
+
+```{r}
+kmedkinf <- c(exp(3.136525), exp(3.211669))
+mmedkinf <- c(exp(3.231677), exp(3.289498))
+```
+
+| bmi (median) | Nedre | Øvre |
+| --- | --- | ---
+| Kvinder | 23 | 24.8 |
+| Mænd | 25.3 | 26.8 |
+
+## k) Køns forskelle
+
+Vi kan undersøge om der er statistisk signifikans i dataen til at påvise en forskel på kvinders og mænds BMI, det kan vi med hypotesen at deres middelværdier er ens.
+
+- $H_0: \mu_k=\mu_m$
+- $H_1: \mu_k\ne\mu_m$
+- $\alpha=0.05$
+Her bruges den log transformerede bmi, da den er lidt nemmere at arbejde med, da den følger en normal fordeling.
+
+Nu da vi prøver at beskrive noget om 2 uafhængige forskellige populationer, altså mænd og kvinder, er det nødvendigt at bruge andre/udvidet formler end tidligere.
+
+Nu bruges følgende formler til udregning af teststørelse, frihedsgrader og p værdi:
+(NB. $\tilde{x}$, $S$, $n$ er altså middelværdi, standard afvigelse og antal observationer for stikprøven og ikke populationen, og $\delta_0$ er middelværdi differensen i hypotesen, hvilket i denne hypotese er 0):
+
+
+- $t_{obs}=\frac{(\tilde{x_1}-\tilde{x_2})-\delta_0}{/\sqrt{S_1^2/n+S_2^2/n}}$
+- $V = \frac{(\frac{S_1^2}{n_1}+\frac{S_2^2}{n_2})^2}{\frac{(S_1^2/n_1)^2}{n_1-1}+\frac{(S_2^2/n_2)^2}{n_2-1}}$
+
+
+Indsætter følgende og udregner med R.
+
+```{r}
+xt1 <- mean(Dmale$logbmi)
+xt2 <- mean(Dfemale$logbmi)
+s1 <- sd(Dmale$logbmi)
+s2 <- sd(Dfemale$logbmi)
+n1 <- nrow(Dmale)
+n2 <- nrow(Dfemale)
+```
+
+- Logbmi middelværdi i stikprøven for mænd: $\tilde{x_1}=3.26058$
+- Logbmi middelværdi i stikprøven for kvinder: $\tilde{x_1}=3.17409$
+- Standardafvigelse for mænd : $s_1 \approx 0.123$
+- Standardafvigelse kvinder : $s_1 \approx 0.159$
+- Antal observationer for kvinder: 73
+- Antal observationer for kvinder: 72
+
+Hermed fås:
+
+```{r}
+tkobs <- (xt1-xt2)/sqrt(((s1^2)/n1)+(s2^2)/n2)
+vtop <- (((s1^2)/n1)+((s2^2)/n2))^2
+vbot <- (((s1^2/n1)^2)/(n1-1))+(((s2^2/n2)^2)/(n2-1))
+v <- vtop/vbot
+```
+
+- $t_{obs}\approx3.637$
+- $V \approx 133.75$
+
+Nu er det blot at "slå op" i t fordelingen med test størelsen og frihedsgraderne i formlen:
+
+- $p-value = 2 \times P(T>|t_{obs}|)$
+
+Her fås p værdien:
+```{r}
+pk <- 2*(1 - pt(tkobs, df=v))
+```
+- $p \approx 0.00039$
+
+Det er en lille p værdi, hvilket betyder at der er stærk evidens for at hypotesen ikke er sand. Givet signifikans niveauet på 0.05 er hypotesen afvist, da p værdien er mindre end signifikans niveauet.
+Med andre ord viser undersøgelsen at der er en forskel på kvinder og mænds logbmi i populationen med minimum 95% sikkerhed.
+
+Der fås samme resultater med ```t.test()``` funktionen i R.
+```{r}
+ttestresults <- t.test(Dmale$logbmi,Dfemale$logbmi)
+#ttestresults
+```
+
+## l) Inference med konfidensintervaler
+
+Hvis vi kigger på 95% konfidensintervallerne igen, ser vi at den højeste værdi for kvinder er mindre end den laveste værdi for mænd.
+
+| Middel LogBmi | Nedre | Øvre |
+| --- | --- | ---
+| Kvinder | 3.136525 | 3.211669 |
+| Mænd | 3.231677 | 3.289498 |
+
+Det betyder at konfidensintervallerne ikke overlapper og derfor ikke har nogen fællesværdier.
+
+Hvis vi er 95% sikre på at middelværdierne i 2 forskellige uafnhægige populationer ligger i 2 intervaller som ingen fællesværdier har, er vi også 95% sikre på at de 2 populationers middelværdi er forskellig.
+
+Derfor kunne vi blot ved at kigge på konfidensintervalerne, afvise hypotesen om at kvinder og mænd har samme logbmi middelværdi.
+
+## m) Korrelation
+
+Korrelation af stikprøvens variable kan findes ved at finde korrelations koofficienten med formler:
+
+- $s_{xy} = \frac{1}{n-1}\sum_{i=1}^{n}(x_i-\tilde{x})(y_i-\tilde{y})$
+- $r=\frac{1}{n-1}\sum_{i=1}^{n} (\frac{x_i-\tilde{x}}{s_x})(\frac{y_i-\tilde{y}}{s_y}) = \frac{s_{xy}}{s_x\times s_y}$
+
+Hvor $\tilde{x}, x, s_x$ er den tilsvarende middelværdi, observations værdi og standard afvigelse for den givne observations variabel. 
+
+```{r}
+mbmi <- mean(D$bmi)
+sbmi <- sd(D$bmi)
+mweight <- mean(D$weight)
+sweight <- sd(D$weight)
+covariance <- 1/(n-1)*sum((D$bmi-mbmi)*(D$weight-mweight))
+correlation <- covariance/(sbmi*sweight)
+fl <- c(c(first$bmi, first$weight),c(last$bmi, last$weight))
+```
+
+Indsætter følgende og beregner med R:
+
+- $s_x \approx 3.83$
+- $s_y \approx 15.20$
+- $\tilde{x} \approx 25.24$
+- $\tilde{y} \approx 76.73$
+- $r=\frac{1}{144}\times ((\frac{24.7-25.24}{3.83})(\frac{80-76.73}{15.20})+\dots+(\frac{39.5-25.24}{3.83})(\frac{105-76.73}{15.20})) \approx 0.82826$
+
+
+```{r}
+ffbmi <- cor(D$fastfood, D$bmi)
+ffweight <- cor(D$weight, D$fastfood)
+```
+Vi har også korrelationerne mellem fastfood og bmi og vægt og fastfood.
+
+- Korrelation af Vægt og Fastfood $\approx 0.279$ 
+- Korrelation af Bmi og Fastfood $\approx 0.153$ 
+
+Nedenfor ses scatter plots af data'en med de 3 parvise konfigurationer af BMI, Fastfood og Vægt.
+
+```{r}
+par(mfrow=c(1,3))
+plot(D$bmi, D$weight, xlab="bmi", ylab="vægt")
+plot(D$bmi, D$fastfood, xlab="bmi", ylab="fastfood")
+plot(D$weight, D$fastfood, xlab="vægt", ylab="fastfood")
+```
+Korrelations kooficienterne er som forventet. Korrelationen mellem vægt og bmi er omkring 0.8 hvilket i min optik viser korrelation, dermed ser man også på plottet at de følges, når bmi bliver høj bliver vægt også højere. Derudover ser vi også at korrelationerne for de konfigurationer der indeholder fastfood ikke er særlig høje, hvilket også kan ses på de meget flade "linjer" data'en danner. Dog kan dette skyldes data representationen. Måske ville det se anderledes ud hvis der var et præcist antal fastfood besøg.
+
