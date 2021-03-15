@@ -17,6 +17,7 @@ Dette projekt består af en beskrivende analyse og en statistisk analyse af et d
 Projektet henvender sig til læserer som er familiær med projekt beskrivelsen og befærder sig komfortabelt i statistiske begreber og metoder.
 
 Dette projekt er lavet som en R notebook og kan findes i rå form på: https://github.com/DanielHauge/02402-statistics/blob/master/Project1/project.rmd
+Projektet kan også findes i preview med kode segmenter åbne på: https://htmlpreview.github.io/?https://github.com/DanielHauge/02402-statistics/blob/master/Project1/project.nb.html
 
 # Beskrivende analyse
 
