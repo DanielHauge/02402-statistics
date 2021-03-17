@@ -1,0 +1,67 @@
+---
+title: "02402 - Statistics exercise week 7"
+output: html_notebook
+author: "Daniel F. Hauge"
+---
+
+All Exercise descriptions are available in the book at the course website: [Book](https://02402.compute.dtu.dk/enotes/book-IntroStatistics)
+
+https://02402.compute.dtu.dk/enotes/chapter4-SimulationBasedStatistics
+http://www2.compute.dtu.dk/courses/introstat/slides02402/week7.pdf
+http://www2.compute.dtu.dk/courses/introstat/slides02402/week7.R
+https://02402.compute.dtu.dk/filemanager/02402/sharelatex-public/files/solutions-chapter4.pdf
+
+
+# 4.1
+
+## a)
+```{r}
+n <- 100000
+xA <- rexp(n, 1/2)
+xB <- rexp(n, 1/3)
+xC <- rexp(n, 1/5)
+x <- cbind(xA,xB,xC)
+xmeans <- apply(x,1,mean)
+```
+
+## b)
+```{r}
+mean(xmeans)
+```
+
+## c)
+```{r}
+sd(xmeans)
+```
+## d)
+```{r}
+mean(xmeans <= 1)
+```
+
+## e)
+```{r}
+median(xmeans)
+```
+
+## f)
+```{r}
+quantile(xmeans, 0.1)
+```
+
+## g)
+```{r}
+hist(xmeans)
+```
+
+
+# 4.2
+
+
+
+
+# 4.3
+
+# 4.4
+
+# 4.5
+
