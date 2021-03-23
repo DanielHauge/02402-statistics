@@ -1,0 +1,46 @@
+---
+title: "02402 - Statistics exercise week 8"
+output: html_notebook
+author: "Daniel F. Hauge"
+---
+
+All Exercise descriptions are available in the book at the course website: [Book](https://02402.compute.dtu.dk/enotes/book-IntroStatistics)
+
+https://02402.compute.dtu.dk/enotes/chapter5-SimpleLinearRegression
+http://www2.compute.dtu.dk/courses/introstat/slides02402/week8.pdf
+http://www2.compute.dtu.dk/courses/introstat/slides02402/week8.R
+https://02402.compute.dtu.dk/filemanager/02402/sharelatex-public/files/solutions-chapter5.pdf
+
+
+# 5.1
+
+## a)
+$\hat{\beta_0}$ kan ikke være 0, da den linære model har negativ hældning, og vi er på den første kvadrant af koordinat systemet. Derfor har vi ikke krydset y aksen og skal derfor være positiv i dette tilfælde, derfor er -252 også elimineret. $\hat{\beta_0}$ Skal derfor være 252.
+
+$\hat{\beta_1}$ er hældningen, den er negativ derfor skal den være -0.9
+
+Estimationen af variancen, eller fejlen af data'en til den linære regressions model er 3.6 da data punkterne er ret tæt på den linære regression, og har typisk ikke særlig stor fejl. Der er ihvertfald slet ikke 36 som fejl.
+
+Det er så nummer 3.
+
+## b)
+Proportionen af varitionen er høj, så den er ikke 0 så det er altså ikke nummer 2. Correlationen er negativ ved en negativ hældning, Så det er derfor ikke 1 og 4 med collreationen 0.98. Correlationen er ikke præcis 1, da ikke alle data punkter ligger direkte på regresions linjen. Derfor er det nummer 5.
+
+
+# 5.2
+
+## a)
+```{r}
+t <- c(10,20,30,40,50,60,70,80,90)
+y <- c(420,365,285,220,176,117,69,34,5)
+fit <- lm(y ~ t)
+summary(fit)
+
+```
+
+
+```{r}
+fit$coefficients[2]+c(-1,1)*qt(.975,fit$df.residual)*0.2558
+```
+## b)
+Konfidens intervallet er ikke over 0. Derfor ser vi meget evidens imod correlationen ikke findes.
