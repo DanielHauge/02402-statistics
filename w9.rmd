@@ -1,0 +1,19 @@
+---
+title: "02402 - Statistics exercise week 9"
+output: html_notebook
+author: "Daniel F. Hauge"
+---
+
+All Exercise descriptions are available in the book at the course website: [Book](https://02402.compute.dtu.dk/enotes/book-IntroStatistics)
+
+https://02402.compute.dtu.dk/enotes/chapter6-MultipleLinearRegression
+http://www2.compute.dtu.dk/courses/introstat/slides02402/week9.R
+http://www2.compute.dtu.dk/courses/introstat/data/air.txt
+https://02402.compute.dtu.dk/filemanager/02402/sharelatex-public/files/solutions-chapter6.pdf
+
+# 6.1
+
+
+# 6.2
+
+
