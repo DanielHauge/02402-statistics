@@ -11,7 +11,11 @@ author: "Daniel F. Hauge - s2011687"
 ```{r}
 D <- read.table("E:\\repo\\02402-statistics-exercises\\Project2/bmi2_data.csv", header=TRUE, sep=";", as.is=TRUE)
 D$logbmi <- log(D$bmi)
-n <- nrow(D)
+D_model <- subset(D, id <= 840)
+D_test <- subset(D, id >= 841)
+n_model <- nrow(D_model)
+n_test <- nrow(D_test)
+n <- n_model+n_test
 ```
 
 Dette projekt består af en statistisk analyse af et datasæt med mennesker. Projektet forsøger at kaste lys på BMI med statistik. 
@@ -30,16 +34,172 @@ Projektet er lavet som en R notebook, og indeholder derfor områder hvor R er br
 
 # a) Descriptiv analyse
 
+## Data)
+Datamaterialet indeholder 847 observationer med 5 egenskaber på mennesker for projektets problemstilling. Variable på hver observation er som følger:
+
+| Variable Navn | Måle type | Måle enhed | Forklaring |
+| --- | --- | --- | --- |
+| id | N/A | Heltal | Et unikt tal der kan bruges som identification for observationen.
+| age | Kvantitativt | År | Personens alder målt i år.
+| fastfood | Kvantitativt | dage pr. år | Antal dage per år personen har spist fastfood. 
+| bmi | Kvantitativt | Bmi | Dette er en enhed som prøver at beskrive kroppens størelses forhold, baseret på vægt og højde. Bmi står for "Body Mass Index". 
+| logbmi | Kvantitativt | Log(Bmi) | Dette er bmi'en der er blevet log transformeret.
+Nedenfor ses første og sidste observation som et præsenterende eksempel:
+```{r}
+first <- head(D, 1)
+last <- tail(D,1)
+rbind(first,last)
+```
+
+## Fordeling
+
+### Nøgle tal
+```{r}
+summaryOfVar <- function(navn, data) {
+  return (c(navn, sum(!is.na(data)), mean(data, na.rm=TRUE), var(data, na.rm=TRUE), sd(data, na.rm=TRUE), quantile(data, .25), quantile(data, .50), quantile(data, .75)))
+}
+
+printSummary <- function(summary){
+  format <- "%s: \n\t Antal Observationer: %s \n\t Middelværdi: %s \n\t Variation: %s \n\t Standard afvigelse: %s \n\t Nedre kvartil: %s \n\t Median: %s \n\t Øvre kvartil: %s\n"
+  formatted <- do.call(sprintf, c(fmt = format, as.list(summary)))
+  return (formatted)
+}
+```
+
+```{r}
+cat(printSummary(summaryOfVar("fastfood", D$fastfood)))
+cat(printSummary(summaryOfVar("age", D$age)))
+cat(printSummary(summaryOfVar("logbmi", D$logbmi)))
+```
+
+### Plots
+```{r}
+par(mfrow=c(1,2))
+plot(D$age, D$logbmi, ylab="logbmi", xlab="age")
+plot(D$fastfood, D$logbmi, ylab="logbmi", xlab="fastfood")
+```
+```{r}
+boxplot(D$bmi, D$age, D$fastfood, names=c("bmi", "age", "fastfood"), xlab="Variaben", ylab="Værdi")
+```
+```{r}
+par(mfrow=c(1,3))
+hist(D$logbmi, xlab="logbmi", ylab="Tæthed",prob=TRUE, main = "Histogram over log bmi tæthed")
+hist(D$fastfood, xlab="Fastfood", ylab="Tæthed",prob=TRUE, main = "Histogram over Fastfood tæthed")
+hist(D$age, xlab="Alder", ylab="Tæthed",prob=TRUE, main = "Histogram over alders tæthed")
+```
+
+
 # b) Multipel lineær regressionsmodel
+
+Det forudsættes at residualerne er normal fordelt.
+
+- $logbmi_i = \beta_0 + \beta_1\times alder_i+\beta_2\times fastfood + \epsilon_i , \epsilon_i \sim  N(0,v^2)$
+
+
 
 # c) Model parametre
 
+```{r}
+fit <- lm(D_model$logbmi ~ D_model$age + D_model$fastfood)
+#qqnorm(fit$residuals)
+#qqline(fit$residuals)
+summary(fit)
+```
+
+- $\beta_0$ er intercepten og angiver egentlig bare en start kontext.
+- $\beta_1$ er kooficienten der angiver indfyldelses størelsen af første forkarlings variable. (I dette tilfælde hvor stor en indfyldelse alder har på modellen)
+- $\beta_2$ er kooficienten der angiver indflydelses størelsen af anden forklarings variable. (I dette tilfælde hvor stor en indflydelse fastfood har på modellen).
+
+Denne fortolkning burde ikke bruges hvis forklarings variablerne er kollineare. Men i dette tilfælde ser det ud til at være fint. Det kan blandt andet ses ved at finde correlationen mellem forklaringsvariablerne, eller ved P værdien i tidligere R output.
+
+
+
 # d) Model kontrol
 
+```{r}
+plot(fit$fitted.values, D_model$logbmi, xlab = "Fittede værdier",
+ylab = "log(BMI)")
+# Residualer mod hver af de forklarende variable
+plot(D_model$age, fit$residuals,
+xlab = "Alder", ylab = "Residualer")
+# Residualer mod fittede værdier
+plot(fit$fitted.values, fit$residuals, xlab = "Fittede værdier",
+ylab = "Residualer")
+# Normal QQ-plot af residualerne
+qqnorm(fit$residuals, ylab = "Residualer", xlab = "Z-scores",
+main = "")
+qqline(fit$residuals)
+```
+
+```{r}
+library(MESS)
+qqnorm.wally <- function(x, y, ...) { qqnorm(y, ...) ; abline(a=0, b=1) }
+wallyplot(fit$residuals, FUN=qqnorm.wally , main="") # FUN=qqnorm.wally
+```
+
+
 # e) Alders koefficient konfidensinterval
+```{r}
+e_b <- fit$coefficients[2]
+e_t <- qt(0.975, df=fit$df.residual)
+e_v <- sqrt(diag(vcov(fit)))[2]
+```
+
+- $\hat{\beta}_i \pm t_{1-\alpha/2} \times \hat{\sigma}_{\beta_i}$
+Fundet med R:
+- $\hat{\beta}_1 \approx 0.0023743602$
+- $\hat{\sigma}_{\beta_1} = 0.0003889714 $ 
+- $t_{1-\alpha/2} = 1.9628022725 $
+- $0.0023743602 \pm 1.9628022725 * 0.0003889714 $
+```{r}
+e_b + c(-1,1)*e_t*e_v
+```
+
+
+```{r}
+confint(fit, level=0.95)
+```
+
 
 # f) Hypotesetest
+Givet null-hypotesen: 
+- $H_0 : \beta_1 = 0.001 \implies \beta_1 - 0.001 = 0$
+Den alternative hypotese:
+- $H_1 : \beta_1 - 0.001 \ne 0$
+Givet signifikansniveauet $\alpha= 0.05$ kan vi teste hypotesen ved at udregne p værdien.
+
+Beregner test størelsen med formel:
+$t_{obs,\beta_1} = \frac{\beta_1-0.001}{\sigma_{\beta_1}}$
+Derefter kan test størelsen bruges til at slå op i t fordelingen for at finde p værdien med formel:
+$p = 2 P(T > |t_{obs,\beta_1}|$
+
+```{r}
+f_t <- (0.0023743602-0.001)/0.0003889714
+f_p <- 2*(1-pt(f_t, df=fit$df.residual))
+fit$df.residual
+#c(f_t,f_p)
+```
+
+Finder test størelsen for indflydelses størelsen af alder er 0.001:
+$t_{obs,\beta_1} = \frac{0.0023743602-0.001}{0.0003889714}= 3.5333194163$
+
+Slår op i t fordelingen med test størelsen, 837 frihedsgrader og får:
+$p = 2 P(T > 3.5333194163|) = 0.0004328512$
+
+P værdien er meget lav, hvilket betyder der er stærk evidens imod hypotesen. Vi afviser derfor hypotesen med et signifikans niveauet på 0.05, da p værdien er mindre.
+
 
 # g) Backward selection
+```{r}
+summary(lm(D_model$logbmi ~ D_model$age + D_model$fastfood))
+```
+
+```{r}
+summary(lm(D_model$logbmi ~ D_model$age))
+```
+
+```{r}
+summary(lm(D_model$logbmi ~ D_model$fastfood))
+```
 
 # h) Prædiktioner
