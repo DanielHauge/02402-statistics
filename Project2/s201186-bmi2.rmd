@@ -24,11 +24,9 @@ Projektet henvender sig til læserer som er familiær med projekt beskrivelsen f
 Projektet er lavet som en R notebook, og indeholder derfor områder hvor R er brugt som redskab til udregning og plot optegninger. Bokse med skriften ```Code``` indikere at der er blevet kodet noget i R til at udregne, tegne eller gemme værdier til senere brug. R koden kan findes på følgende måder:
 
 
-- Se den medfølgende ".R" fil, eller via på: 
-- Se den medfølgende ".rmd" fil, eller på: 
-- Projektet kan også findes i renderet form med kode afsnit på: https://htmlpreview.github.io/?https://github.com/DanielHauge/02402-statistics/blob/master/Project1/project.nb.html
-
-
+- Se den medfølgende ".R" fil.
+- Se den medfølgende ".rmd" fil.
+- Projektet kan læses i renderet form med kode afsnit på: https://htmlpreview.github.io/?https://github.com/DanielHauge/02402-statistics/blob/master/Project2/s201186-bmi2.nb.html
 
 \pagebreak
 
