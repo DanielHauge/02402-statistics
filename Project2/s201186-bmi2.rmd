@@ -24,8 +24,8 @@ Projektet henvender sig til læserer som er familiær med projekt beskrivelsen f
 Projektet er lavet som en R notebook, og indeholder derfor områder hvor R er brugt som redskab til udregning og plot optegninger. Bokse med skriften ```Code``` indikere at der er blevet kodet noget i R til at udregne, tegne eller gemme værdier til senere brug. R koden kan findes på følgende måder:
 
 
-- Se den medfølgende ".R" fil, eller via på: https://github.com/DanielHauge/02402-statistics/blob/master/Project1/projekt_code_only.R 
-- Se den medfølgende ".rmd" fil, eller på: https://github.com/DanielHauge/02402-statistics/blob/master/Project1/project.rmd
+- Se den medfølgende ".R" fil, eller via på: 
+- Se den medfølgende ".rmd" fil, eller på: 
 - Projektet kan også findes i renderet form med kode afsnit på: https://htmlpreview.github.io/?https://github.com/DanielHauge/02402-statistics/blob/master/Project1/project.nb.html
 
 
@@ -51,6 +51,8 @@ last <- tail(D,1)
 rbind(first,last)
 ```
 
+\pagebreak
+
 ## Fordeling
 
 ### Nøgle tal
@@ -71,72 +73,112 @@ cat(printSummary(summaryOfVar("fastfood", D$fastfood)))
 cat(printSummary(summaryOfVar("age", D$age)))
 cat(printSummary(summaryOfVar("logbmi", D$logbmi)))
 ```
+\pagebreak
 
 ### Plots
+I denne sektion kastes der lys på data'en med plots.
+
+#### Scatterplots
+Nedenfor ses simple scatter plots af logbmi på y aksen, år og fastfood på x aksen.
 ```{r}
 par(mfrow=c(1,2))
 plot(D$age, D$logbmi, ylab="logbmi", xlab="age")
 plot(D$fastfood, D$logbmi, ylab="logbmi", xlab="fastfood")
 ```
+En llle ting der bør nævnes er at fastfood har en katagoriserende natur, men er i kvantitativ form, derfor ses observationerne af fastfood at ligge på linjer.
+
+\pagebreak
+
+#### Segmentering & Sammenligning
+Først kan vi segmentere efter BMI. Nedenfor ses 2 boxplots der segmentere BMI i under, normal og overvægtig.
 ```{r}
-boxplot(D$bmi, D$age, D$fastfood, names=c("bmi", "age", "fastfood"), xlab="Variaben", ylab="Værdi")
+par(mfrow=c(1,2))
+D_bmi_under <- subset(D_model, bmi <= 18.5)
+D_bmi_normal <- subset(D_model, bmi > 18.5 & bmi < 25)
+D_bmi_over <- subset(D_model, bmi > 25)
+
+
+boxplot(D_bmi_under$age, D_bmi_normal$age, D_bmi_over$age, names=c("under", "normal", "over"), xlab="BMI", ylab="Alder")
+boxplot(D_bmi_under$fastfood, D_bmi_normal$fastfood, D_bmi_over$fastfood, names=c("under", "normal", "over"), xlab="BMI", ylab="Fastfood")
 ```
+Man kan se at der er en tendens til at mennesker med højere BMI typisk er ældre, samt at der med højere BMI også findes flere ekstreme tilfælde af fastfood.
+
+\pagebreak
+
+Nedenfor ses 2 boxplots hvor segmenteringen følger fastfood.
+```{r}
+par(mfrow=c(1,2))
+D_ff_0 <- subset(D_model, fastfood < 0.1)
+D_ff_1 <- subset(D_model, fastfood < 1.1 & fastfood > 0)
+D_ff_6 <- subset(D_model, fastfood < 6.1 & fastfood > 1)
+D_ff_24 <- subset(D_model, fastfood < 24.1 & fastfood > 6)
+D_ff_78 <- subset(D_model, fastfood < 78.3 & fastfood > 24)
+D_ff_big <- subset(D_model, fastfood > 78.2)
+boxplot(D_ff_0$age, D_ff_1$age, D_ff_6$age, D_ff_24$age, D_ff_78$age, D_ff_big$age , names=c("0", "1", "6", "24", "78", "+"), xlab="Fastfood", ylab="Alder")
+boxplot(D_ff_0$bmi, D_ff_1$bmi, D_ff_6$bmi, D_ff_24$bmi, D_ff_78$bmi, D_ff_big$bmi , names=c("0", "1", "6", "24", "78", "+"), xlab="Fastfood", ylab="Bmi")
+```
+Med disse boxplots kan man se at det generelt er den yngre del af stikprøven der spiser mest fastfood. Det ses også at med højere fastfood forbrug er spredningen af BMI en del stører og generelt højere bmi, hvilket kunne indikere at fastfood har en øgenede indflydelse på bmi. Dog bør der kigges på flere faktorer for at konkludere, da det nok ikke kun er fastfood eller alder der har indflydelse på bmi.
+
+\pagebreak
+
+Nedenfor ses histogrammer for bmi, fastfood og alder.
 ```{r}
 par(mfrow=c(1,3))
 hist(D$logbmi, xlab="logbmi", ylab="Tæthed",prob=TRUE, main = "Histogram over log bmi tæthed")
 hist(D$fastfood, xlab="Fastfood", ylab="Tæthed",prob=TRUE, main = "Histogram over Fastfood tæthed")
 hist(D$age, xlab="Alder", ylab="Tæthed",prob=TRUE, main = "Histogram over alders tæthed")
 ```
+Histogrammerne viser en højreskæv normalt fordelt logbmi. Histogrammet viser også at fastfood generelt ikke er en daglig dags ting, men mere til seværdigheder. Dog er der sjælnde tilfælde hvor fastfood er tæt på en dagligdags ting. Stikprøven Lader også til at følge en semi uniform fordeling. Hvis vi ser bort fra helt unge og helt gamle mennesker, har vi nogenlunde lige mange mennesker i alders grupperne fra slut 20'erne til start 60'erne, pånær slut 60'erne.
 
+\pagebreak
 
 # b) Multipel lineær regressionsmodel
 
-Det forudsættes at residualerne er normal fordelt.
+Det forudsættes at residualerne er normal fordelt. Denne forudsætning er vigtig for den multi linære regression.
 
-- $logbmi_i = \beta_0 + \beta_1\times alder_i+\beta_2\times fastfood + \epsilon_i , \epsilon_i \sim  N(0,v^2)$
+Multipel lineær regressionsmodel:
 
+- $logbmi_i = \beta_0 + \beta_1\times alder_i+\beta_2\times fastfood_i + \epsilon_i , \epsilon_i \sim  N(0,\sigma^2)$
 
 
 # c) Model parametre
-
+Bruger R til udregning af modellens parametre.
 ```{r}
-fit <- lm(D_model$logbmi ~ D_model$age + D_model$fastfood)
-#qqnorm(fit$residuals)
-#qqline(fit$residuals)
+fit <- lm(logbmi ~ age + fastfood, data=D_model)
 summary(fit)
 ```
 
-- $\beta_0$ er intercepten og angiver egentlig bare en start kontext.
-- $\beta_1$ er kooficienten der angiver indfyldelses størelsen af første forkarlings variable. (I dette tilfælde hvor stor en indfyldelse alder har på modellen)
-- $\beta_2$ er kooficienten der angiver indflydelses størelsen af anden forklarings variable. (I dette tilfælde hvor stor en indflydelse fastfood har på modellen).
+- $\beta_0 = 3.1124298$ er intercepten og angiver en start kontext for tilpasning for de faktorer der ikke betragtes i modellen.
+- $\beta_1 = 0.0023744$ er kooficienten der angiver indfyldelses størelsen af første forkarlings variable. (I dette tilfælde hvor stor en indfyldelse alder har på modellen)
+- $\beta_2 = 0.0005404$ er kooficienten der angiver indflydelses størelsen af anden forklarings variable. (I dette tilfælde hvor stor en indflydelse fastfood har på modellen).
+- $\sigma = 0.1573$ er standard residual fejl.
 
-Denne fortolkning burde ikke bruges hvis forklarings variablerne er kollineare. Men i dette tilfælde ser det ud til at være fint. Det kan blandt andet ses ved at finde correlationen mellem forklaringsvariablerne, eller ved P værdien i tidligere R output.
+Denne fortolkning burde ikke bruges hvis forklarings variablerne er kollineare. Men i dette tilfælde ser det ud til at være fint. 
+Det kan blandt andet ses ved at finde correlationen mellem forklaringsvariablerne (vises senere) og ved P værdien i tidligere R output.
 
-
+\pagebreak
 
 # d) Model kontrol
-
+Det er vigtigt at residualerne er normal fordelt for at den multipel liniære regression passer. Nedenfor ses et plot af det fittede værdier imod dets residual. Hvis der ses bort fra de enkelte ekstreme residualer, er der ikke umiddelbart noget system over residualerne, samt at residualerne følger qq plottet rimelig tæt.
 ```{r}
-plot(fit$fitted.values, D_model$logbmi, xlab = "Fittede værdier",
-ylab = "log(BMI)")
-# Residualer mod hver af de forklarende variable
-plot(D_model$age, fit$residuals,
-xlab = "Alder", ylab = "Residualer")
-# Residualer mod fittede værdier
-plot(fit$fitted.values, fit$residuals, xlab = "Fittede værdier",
-ylab = "Residualer")
-# Normal QQ-plot af residualerne
-qqnorm(fit$residuals, ylab = "Residualer", xlab = "Z-scores",
-main = "")
+par(mfrow=c(1,2))
+plot(fit$fitted.values, fit$residuals, xlab = "Fittede værdier", ylab = "Residual")
+qqnorm(fit$residuals, ylab = "Residualer", xlab = "Z-scores", main = "")
 qqline(fit$residuals)
 ```
 
+\pagebreak
+
+Udover ovenstående, kan vi også teste med et "find wally" experiment. Nedenfor ses 9 qq plots som experimentet er lavet på. Experiementet forsøger at udpege en eventuel afvigning fra en normal fordeling. Der kan ikke umiddelbart ses nogen afvigning fra at residualerne er normal fordelt.
+
 ```{r}
 library(MESS)
-qqnorm.wally <- function(x, y, ...) { qqnorm(y, ...) ; abline(a=0, b=1) }
-wallyplot(fit$residuals, FUN=qqnorm.wally , main="") # FUN=qqnorm.wally
+wallyplot(fit$residuals, FUN=qqnorm , main="") # FUN=qqnorm.wally || residualplot
 ```
 
+N.B Vi kender ikke den helt rigtige model, men vi går nok ikke helt galt ved at antage modellens residualer er normal fordelt.
+
+\pagebreak
 
 # e) Alders koefficient konfidensinterval
 ```{r}
@@ -144,43 +186,52 @@ e_b <- fit$coefficients[2]
 e_t <- qt(0.975, df=fit$df.residual)
 e_v <- sqrt(diag(vcov(fit)))[2]
 ```
+Bruger formel:
 
 - $\hat{\beta}_i \pm t_{1-\alpha/2} \times \hat{\sigma}_{\beta_i}$
-Fundet med R:
-- $\hat{\beta}_1 \approx 0.0023743602$
-- $\hat{\sigma}_{\beta_1} = 0.0003889714 $ 
-- $t_{1-\alpha/2} = 1.9628022725 $
-- $0.0023743602 \pm 1.9628022725 * 0.0003889714 $
-```{r}
-e_b + c(-1,1)*e_t*e_v
-```
 
+Værdier aflæst fra tidligere R output:
+
+- $\hat{\beta}_1 \approx 0.0023743602$
+- $\hat{\sigma}_{\beta_1} = 0.0003889714$ 
+- $t_{1-\alpha/2} = 1.9628022725$
+- $0.0023743602 \pm 1.9628022725 \times 0.0003889714$
+```{r}
+conf.inv <- e_b + c(-1,1)*e_t*e_v
+```
+Hermed konfidens intervallet: [0.001610886, 0.003137834]
+Det er det samme resultat der fås med R's funktion 'confint'.
 
 ```{r}
 confint(fit, level=0.95)
 ```
 
-
 # f) Hypotesetest
 Givet null-hypotesen: 
+
 - $H_0 : \beta_1 = 0.001 \implies \beta_1 - 0.001 = 0$
+
 Den alternative hypotese:
+
 - $H_1 : \beta_1 - 0.001 \ne 0$
+
 Givet signifikansniveauet $\alpha= 0.05$ kan vi teste hypotesen ved at udregne p værdien.
 
 Beregner test størelsen med formel:
+
 $t_{obs,\beta_1} = \frac{\beta_1-0.001}{\sigma_{\beta_1}}$
+
 Derefter kan test størelsen bruges til at slå op i t fordelingen for at finde p værdien med formel:
+
 $p = 2 P(T > |t_{obs,\beta_1}|$
 
 ```{r}
 f_t <- (0.0023743602-0.001)/0.0003889714
 f_p <- 2*(1-pt(f_t, df=fit$df.residual))
-fit$df.residual
 #c(f_t,f_p)
 ```
 
-Finder test størelsen for indflydelses størelsen af alder er 0.001:
+Finder test størelsen for indflydelses størelsen af alder ved værdien 0.001:
 $t_{obs,\beta_1} = \frac{0.0023743602-0.001}{0.0003889714}= 3.5333194163$
 
 Slår op i t fordelingen med test størelsen, 837 frihedsgrader og får:
@@ -188,18 +239,65 @@ $p = 2 P(T > 3.5333194163|) = 0.0004328512$
 
 P værdien er meget lav, hvilket betyder der er stærk evidens imod hypotesen. Vi afviser derfor hypotesen med et signifikans niveauet på 0.05, da p værdien er mindre.
 
+\pagebreak
 
 # g) Backward selection
-```{r}
-summary(lm(D_model$logbmi ~ D_model$age + D_model$fastfood))
-```
+Med backward selection forsøger vi at reducere modellen ved at ignorere variable der ingen indflydelse på modellen har. Vi starter med modellen som beskrevet i opgave del b.
 
-```{r}
-summary(lm(D_model$logbmi ~ D_model$age))
-```
+Nedenfor ses udregninger med R.
 
+### Correlation:
+De følgende 3 correlationer er hhv. bmi-fastfood , bmi-age , fastfood-age og er udregnet med R's cor funktion.
 ```{r}
-summary(lm(D_model$logbmi ~ D_model$fastfood))
+c(cor(D_model$bmi, D_model$fastfood),cor(D_model$bmi, D_model$age),cor(D_model$fastfood, D_model$age))
 ```
+I blandt de 3 variable har ingen af dem en betydelig klar correlation, derfor kan vi ikke på det grundlag fjerne dem. Hvis der havde været en variable der angav minutter siden fødsel, havde den haft en høj correlation med alder og kunne derfor ignoreres.
+
+### Confidens intervaller
+De følgende confidens intervaller er for den multipel lineære regressions models parametre.
+```{r}
+confint(fit)
+```
+På R's output ses det at både alder og fastfood har en meget lille indfyldelse på logbmi, der må altså derfor være andre faktorer der spiller ind, som eventuelt kunne være: køn, fysisk aktivitet, gener mm. 
+
+### MLR Summary
+Det følgende R output er en info summering af regressions modellen.
+```{r}
+summary(fit)
+```
+Givet signifikans niveauet 0.05 ses det at alle variablerne er statistisk signifikant med de lave p-værdier, hvilket betyder at der er evidens imod ide'en om at variablerne alder og fastfood ikke har en betydning på logbmi. Af denne grund påvises det altså at alder og fastfood har en statistisk effekt på logbmi, og bør derfor ikke fjernes fra modellen. Med andre ord har alder og fastfood en unik indflydelse på logbmi.   
+
+### Slut model
+Hermed den endelige model med dets parametre:
+
+- $logbmi_i = 3.0744463234  + 0.0023744 \times alder_i + 0.0005404 \times fastfood_i + \epsilon_i , \epsilon_i \sim  N(0,0.1573^2)$
+
+\pagebreak
 
 # h) Prædiktioner
+I dette afsnit er R's predict funktion brugt til beregninger følgende.
+
+### Prædiktion
+```{r}
+pred <- predict(fit, newdata = D_test, interval = "prediction")
+cbind(pred)
+```
+
+
+### Confidence
+```{r}
+conf <- predict(fit, newdata = D_test, interval = "confidence")
+cbind(conf)
+
+```
+
+### Vurdering
+Givet test data er modellens prædiktion. Alle test punkternes fittet værdi (værdi tilpasset med indflydelse fra alder og fastfood) passer i både prædiktion og confidence intervallerne. 
+Confidence intervallet reflectere middelværdien hvor prædiktions intervallet reflectere en enkelt værdi. Hvis vi udregner den rigtige bmi ved at tage værdien til exponential funktionen af de første test intervaller fås følgene:
+```{r}
+cat(sprintf("Prædiktion: [%s , %s]\n", exp(2.927972), exp(3.546015)))
+cat(sprintf("Confidence: [%s , %s]", exp(3.225973 ), exp(3.248014)))
+```
+Det giver meget god mening at modellen prædiktere at en eventuel næste værdi observeret vil være mellem 18 og 34 bmi. Det er måske et lidt stort interval, men det giver meget god mening. Udover prædiktionen viser den også at middelværdien burde ligge mellem 25,16 og 25,73 hvilket også er meget plausibelt.
+
+Givet residualernes fejl ser ud til at være normalt fordelt med en konstant variance som vist i opgave del d, kan modellen umiddelbart godt bruges til at prædiktere.
